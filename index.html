@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1"/>
+<title id="pageTitle">בינה ודעה - קהילת ה-AI של ישראל</title>
+<meta name="description" content="בינה ודעה - הפלטפורמה המובילה לקהילת ה-AI בישראל. חדשות, עדכונים, גלריית יוצרים ותכני בינה מלאכותית מתקדמים.">
+<meta name="keywords" content="בינה ודעה, AI, בינה מלאכותית, יצירות AI, חדשות AI, טכנולוגיה, קהילה, מידג'רני, ChatGPT">
+<meta name="google-site-verification" content="Eb4MldiaBPR4QIiKfa4Qw6seUP8lKXn7FdFPx0bNvAY" />
+
+<link rel="icon" type="image/png" href="https://i.ibb.co/KjBNwmPt/image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css?v=101">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q4DQKGJ9E3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Q4DQKGJ9E3');
+</script>
+</head>
+<div class="bg-container" id="bgContainer">
+    <div class="parchment-scratches"></div>
+    <canvas id="sparklesCanvas"></canvas>
+    <div class="mouse-blob" id="mouseBlob"></div>
+</div> <div id="prog"></div>
+<div id="bannedScreen" style="display:none;">
+  <i class="fas fa-ban" style="font-size:80px;color:#dc2626;margin-bottom:20px;"></i>
+  <h1 style="font-size:32px;font-weight:900;margin-bottom:10px;">הגישה נחסמה</h1>
+  <p style="font-size:16px;color:#aaa;max-width:400px;line-height:1.6;">החשבון שלך נחסם מגישה לאתר על ידי הנהלת הקהילה.<br>לא ניתן לצפות או לכתוב תכנים.</p>
+  <button onclick="doLogout()" style="margin-top:30px;background:#dc2626;color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:16px;font-weight:bold;cursor:pointer;font-family:'Heebo',sans-serif;">התנתק מהמערכת</button>
+</div>
+
+<div id="loginScreen">
+ <div class="login-card">
+    <img class="login-logo-img" src="https://i.ibb.co/KjBNwmPt/image.png" onerror="this.style.display='none'">
+    <div class="login-title" id="loginSiteTitle">בינה ודעה</div>
+    <div class="login-sub">התחברות באמצעות גוגל</div>
+    <div id="googleBtn" style="display:flex; justify-content:center;"></div>
+  </div>
+</div>
+
+<div id="rightSidebar">
+  <div id="adInChat" style="display:none;flex:1;overflow:hidden;border-top:1px solid #f0f0f0;">
+    <iframe id="adInChatFrame" srcdoc="" style="width:100%;height:100%;border:none;display:none;"
+      sandbox="allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"></iframe>
+    <a id="adInChatLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+      <img id="adInChatImg" src="" style="width:100%;height:auto;display:block;">
+    </a>
+  </div>
+</div>
+
+<div id="adOnlySidebar" style="display:none;width:320px;min-width:320px;background:#fff;border-left:1px solid rgba(0,0,0,.08);flex-shrink:0;position:sticky;top:56px;height:calc(100vh - 56px);overflow:hidden;">
+  <a id="adSidebarLink" href="#" target="_blank" rel="noopener noreferrer">
+    <img id="adSidebarImg" src="" alt="פרסומת" style="width:100%;height:auto;display:block;">
+  </a>
+  <iframe id="adSidebarFrame" src="" style="display:none;width:100%;height:100%;border:none;" sandbox="allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation" loading="lazy"></iframe>
+</div>
+<div id="app">
+  <header>
+    <button id="mobileMenuBtn" onclick="toggleLeftSidebar()"><i class="fas fa-bars"></i></button>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative;">
+      <img class="hdr-avatar" src="https://i.ibb.co/KjBNwmPt/image.png" onerror="this.style.background='#e02020'">
+      <div id="hdrEmailCountBadge" style="position:absolute;top:-4px;left:-4px;background:#1a56db;color:#fff;border-radius:99px;font-size:9px;font-weight:800;padding:1px 5px;min-width:16px;text-align:center;border:1.5px solid #fff;display:none;font-family:'Heebo',sans-serif;line-height:14px;"></div>
+    </div>
+    <div class="hdr-info">
+      <div class="hdr-name" id="hdrChannelName">בינה ודעה - <span>כללי</span></div>
+     <div class="hdr-status">
+        <div class="hdr-dot"></div> 
+        <span><i class="fas fa-users"></i> <span id="publicUserCount">...</span> חברי קהילה</span>
+      </div>
+    </div>
+    <div class="hdr-user">
+      <div style="position:relative;">
+        <button id="searchBtn" onclick="toggleSearch()" title="חיפוש">
+          <i class="fas fa-search" style="font-size:13px"></i>
+        </button>
+        <div id="searchBar">
+          <input id="searchInput" type="text" placeholder="חיפוש..." oninput="onSearch(this.value)" />
+          <button id="searchClear" onclick="clearSearch()"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      
+      <button class="hdr-icon-btn" onclick="window.open('mailto:0548537646a@gmail.com?subject=%D7%9C%D7%9B%D7%91%D7%95%D7%93%20%D7%9E%D7%A0%D7%94%D7%9C%20%D7%90%D7%AA%D7%A8%20%D7%91%D7%99%D7%A0%D7%94%20%D7%95%D7%93%D7%A2%D7%94','_blank')" title="פנייה למנהל">
+        <i class="fas fa-envelope" style="font-size:13px"></i>
+      </button>
+      <button id="darkBtn" onclick="toggleDark()" title="מצב כהה">
+        <i class="fas fa-moon" style="font-size:13px"></i>
+      </button>
+      <button id="notifBtn" onclick="toggleNotifications()" title="התראות">
+        <i class="fas fa-bell" style="font-size:13px"></i>
+      </button>
+      
+      <div id="userAvatar" style="position:relative; margin-right:5px;"></div>
+    </div>
+  </header>
+
+  <div id="tagFilterBar" style="display:none; padding:10px 15px; background:#fff; border-bottom:1px solid #f0f0f0; gap:8px; overflow-x:auto; white-space:nowrap;">
+      <span style="font-size:12px; font-weight:700; color:#6b7280; margin-left:5px;"><i class="fas fa-tags"></i> סינון תכנים:</span>
+      <div id="tagFilterList" style="display:inline-flex; gap:6px;"></div>
+      <button onclick="clearTagFilter()" id="clearTagBtn" style="display:none; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:12px; padding:4px 10px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Heebo';">✕ נקה סינון</button>
+  </div>
+
+  <div id="feedWrap">
+    <div id="loadMoreSpinner"><div class="lm-ring"></div>טוען עוד...</div>
+    <div id="feedInner"></div>
+    <div id="empty"><i class="fas fa-satellite-dish"></i><p>ממתין לעדכונים...</p></div>
+  </div>
+
+  <div id="searchResults">
+    <div id="searchResultsInner"></div>
+    <div id="searchEmpty">לא נמצאו תוצאות</div>
+  </div>
+
+  <button id="scrollDownBtn" onclick="scrollToBottom()">
+    <div class="unread-dot"></div>
+    <i class="fas fa-arrow-down scroll-arrow"></i>
+  </button>
+</div>
+
+<div id="leftSidebar">
+  <div class="channels-hdr">📋 ערוצים</div>
+  <div id="channelsList"></div>
+
+  <div class="creators-hdr" onclick="toggleCreatorsPanel()">
+    <span style="display:flex;align-items:center;gap:7px;">
+      ✨ לפי יוצרים
+      <span class="ch-dot"></span>
+    </span>
+    <i class="fas fa-chevron-left ch-arrow"></i>
+  </div>
+
+  <div class="stats-hdr" id="statsMenuBtn" style="display:none;" onclick="openSiteStats()">
+    <span style="display:flex;align-items:center;gap:7px;">
+      📊 סטטיסטיקות קהילה
+    </span>
+    <i class="fas fa-chart-line ch-arrow"></i>
+  </div>
+</div>
+
+<div id="adminComposeBar">
+  <div id="composeEditBanner">
+    <i class="fas fa-pen" style="font-size:10px"></i>
+    <span>מצב עריכה — ערוך את ההודעה ולחץ ✓ לשמור</span>
+  </div>
+  <div id="updateModeBar">
+    <button class="update-mode-btn off" id="updateModeBtn" onclick="toggleUpdateMode()">
+      <i class="fas fa-times" style="font-size:9px"></i> לא מעדכן
+    </button>
+    <span id="updateModeWho"></span>
+  </div>
+  <div id="blockNotice">✋ אין לך הרשאת כתיבה בערוץ זה — עברת למצב צפייה בלבד</div>
+  <div class="compose-toolbar">
+    <div id="composerNameBadge" style="background:#eff6ff; color:#1a56db; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:800; border:1px solid #bfdbfe; margin-left:10px;"></div>
+    
+    <button class="ctb-btn" onmousedown="event.preventDefault()" onclick="composeFormat('bold')" title="מודגש"><i class="fas fa-bold"></i></button>
+    <button class="ctb-btn" onmousedown="event.preventDefault()" onclick="composeFormat('italic')" title="נטוי"><i class="fas fa-italic"></i></button>
+    <div style="width:1px;height:16px;background:#e5e7eb;margin:0 2px;"></div>
+    
+    <div class="ctb-dropdown-wrap" id="imgDropWrap">
+      <button class="ctb-btn" id="imgDropBtn" onclick="toggleCtbDropdown('imgDrop')" title="תמונה">
+        <i class="fas fa-image"></i> תמונה
+      </button>
+      <div class="ctb-dropdown" id="imgDrop">
+        <div style="padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+          <input type="file" id="fileUploadInput" accept="image/*" style="display:none;" onchange="uploadToImgBB(this)">
+          <button class="ctb-add-btn" onclick="document.getElementById('fileUploadInput').click()" style="background: #1a56db; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.2s;">
+            <i class="fas fa-cloud-upload-alt"></i> העלה תמונה מהמחשב
+          </button>
+          <div id="uploadStatus" style="display:none; font-size: 12px; color: #1a56db; text-align: center; margin-top: 8px; font-weight: bold;">
+            מעלה תמונה, אנא המתן... <i class="fas fa-spinner fa-spin"></i>
+          </div>
+        </div>
+        
+        <span class="ctb-inp-label">או הדבק כתובת URL של תמונה</span>
+        <input class="ctb-inp" id="composeImgUrl" type="text" placeholder="https://..." oninput="updateComposeImg()">
+        <div id="composeImgThumb" style="display:none;margin-top:8px;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb;">
+          <img id="composeImgThumbImg" style="width:100%;max-height:100px;object-fit:contain;display:block;">
+          <button onclick="clearComposeImg()" style="width:100%;background:#fef2f2;border:none;border-top:1px solid #fecaca;color:#dc2626;font-size:11px;font-weight:700;cursor:pointer;padding:4px;font-family:'Heebo',sans-serif;">הסר תמונה</button>
+        </div>
+      </div>
+    </div> <div class="ctb-dropdown-wrap" id="vidDropWrap">
+      <button class="ctb-btn" id="vidDropBtn" onclick="toggleCtbDropdown('vidDrop')" title="סרטון">
+        <i class="fas fa-video"></i> סרטון
+      </button>
+      <div class="ctb-dropdown" id="vidDrop">
+        <span class="ctb-inp-label">קישור לסרטון מכל מקור (URL)</span>
+        <input class="ctb-inp" id="composeVidUrl" type="text" placeholder="https://..." oninput="updateComposeVid()">
+      </div>
+    </div>
+    <div class="ctb-dropdown-wrap" id="btnDropWrap">
+      <button class="ctb-btn" id="btnDropBtn" onclick="toggleCtbDropdown('btnDrop')" title="כפתור">
+        <i class="fas fa-mouse-pointer"></i> כפתור
+      </button>
+      <div class="ctb-dropdown" id="btnDrop">
+        <span class="ctb-inp-label">טקסט כפתור</span>
+        <input class="ctb-inp" id="composeBtnText" placeholder="לחץ כאן" style="direction:rtl;">
+        <span class="ctb-inp-label">קישור</span>
+        <input class="ctb-inp" id="composeBtnUrl" placeholder="https://...">
+        <button class="ctb-add-btn" onclick="addComposeButton()">+ הוסף כפתור</button>
+        <div id="composeBtnList" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;"></div>
+      </div>
+    </div>
+    <div class="ctb-dropdown-wrap" id="colorDropWrap">
+      <button class="ctb-btn" id="colorDropBtn" onclick="toggleCtbDropdown('colorDrop')" title="צבע טקסט">
+        <i class="fas fa-palette" style="font-size:11px"></i> צבע
+      </button>
+      <div class="ctb-dropdown" id="colorDrop" style="min-width:220px;">
+        <span class="ctb-inp-label">בחר צבע לטקסט הנבחר</span>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#e02020')" style="width:28px;height:28px;border-radius:6px;background:#e02020;border:2px solid transparent;cursor:pointer;" title="אדום"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#1a56db')" style="width:28px;height:28px;border-radius:6px;background:#1a56db;border:2px solid transparent;cursor:pointer;" title="כחול"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#059669')" style="width:28px;height:28px;border-radius:6px;background:#059669;border:2px solid transparent;cursor:pointer;" title="ירוק"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#d97706')" style="width:28px;height:28px;border-radius:6px;background:#d97706;border:2px solid transparent;cursor:pointer;" title="כתום"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#7c3aed')" style="width:28px;height:28px;border-radius:6px;background:#7c3aed;border:2px solid transparent;cursor:pointer;" title="סגול"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#db2777')" style="width:28px;height:28px;border-radius:6px;background:#db2777;border:2px solid transparent;cursor:pointer;" title="ורוד"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#0891b2')" style="width:28px;height:28px;border-radius:6px;background:#0891b2;border:2px solid transparent;cursor:pointer;" title="תכלת"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#374151')" style="width:28px;height:28px;border-radius:6px;background:#374151;border:2px solid transparent;cursor:pointer;" title="כהה"></button>
+          <button onmousedown="event.preventDefault()" onclick="applyTextColor('#9ca3af')" style="width:28px;height:28px;border-radius:6px;background:#9ca3af;border:2px solid transparent;cursor:pointer;" title="אפור"></button>
+        </div>
+        <button onmousedown="event.preventDefault()" onclick="removeTextColor()" style="width:100%;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;border-radius:10px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;">✕ הסר צבע</button>
+      </div>
+    </div>
+    <button class="ctb-btn" onmousedown="event.preventDefault()" onclick="insertDivider()" title="קו מפריד">
+      <i class="fas fa-minus" style="font-size:11px"></i> קו
+    </button>
+    <div class="ctb-dropdown-wrap" id="linkDropWrap">
+      <button class="ctb-btn" id="linkDropBtn" onclick="saveLinkSelection();toggleCtbDropdown('linkDrop')" title="הוסף קישור">
+        <i class="fas fa-link" style="font-size:11px"></i> קישור
+      </button>
+      <div class="ctb-dropdown" id="linkDrop" style="min-width:260px;">
+        <span class="ctb-inp-label">טקסט הקישור</span>
+        <input class="ctb-inp" id="composeLinkText" placeholder="לחץ כאן..." style="direction:rtl;margin-bottom:8px;">
+        <span class="ctb-inp-label">כתובת URL</span>
+        <input class="ctb-inp" id="composeLinkUrl" placeholder="https://..." style="margin-bottom:8px;">
+        <button class="ctb-add-btn" onmousedown="event.preventDefault()" onclick="insertComposeLink()">הוסף קישור</button>
+      </div>
+    </div>
+    <div class="ctb-dropdown-wrap" id="htmlDropWrap">
+      <button class="ctb-btn" id="htmlDropBtn" onclick="toggleCtbDropdown('htmlDrop')" title="הטמע דף HTML">
+        <i class="fas fa-code" style="font-size:11px"></i> HTML
+      </button>
+      <div class="ctb-dropdown" id="htmlDrop" style="min-width:320px;">
+        <span class="ctb-inp-label">הדבק קוד HTML מלא</span>
+        <textarea id="composeHtmlCode" rows="6" placeholder="<!DOCTYPE html>..." style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 11px;font-size:12px;font-family:monospace;outline:none;resize:vertical;direction:ltr;margin-bottom:8px;min-height:100px;transition:border-color .15s;"></textarea>
+        <div style="display:flex;gap:6px;">
+          <button class="ctb-add-btn" onclick="applyHtmlCode()" style="flex:1;">הטמע</button>
+          <button onclick="clearHtmlCode()" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;">נקה</button>
+        </div>
+        <div id="htmlPreviewBadge" style="display:none;margin-top:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:#16a34a;display:flex;align-items:center;gap:5px;">
+          <i class="fas fa-check-circle"></i> <span>קוד HTML מוכן לשליחה</span>
+          <button onclick="clearHtmlCode()" style="margin-right:auto;background:none;border:none;cursor:pointer;color:#dc2626;font-size:11px;">✕</button>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-right:auto; display:flex; align-items:center; gap:8px;">
+        <input id="composeTagsInput" type="text" placeholder="הוסף תוויות (מופרדות בפסיק)..." style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 8px; font-size:11px; font-family:'Heebo'; outline:none; width:150px;">
+        <span id="composeCharCount" style="font-size:10px;color:#aaa;font-weight:600;">0</span>
+        <button class="ctb-btn" onclick="clearCompose()" title="נקה"><i class="fas fa-trash-alt" style="color:#e02020;"></i></button>
+    </div>
+  </div>
+
+  <div id="attachPreview"></div>
+
+  <div class="compose-main">
+    <div id="composeEditor" contenteditable="true" placeholder="כתוב משהו..."
+      oninput="onComposeChange()"
+      onkeydown="onComposeKeyDown(event)"
+    ></div>
+    <button id="updateModeNotice" onclick="toggleUpdateMode()" title="לחץ להפעלת מצב מעדכן">
+      <i class="fas fa-satellite-dish" style="font-size:10px"></i> לא מעדכן — לחץ להפעלה
+    </button>
+    <button class="compose-send-btn" id="composePreviewBtn" onclick="showPreview()" title="תצוגה מקדימה" style="background:#4b5563; box-shadow:0 3px 10px rgba(75,85,99,.35);">
+      <i class="fas fa-eye" style="font-size:14px"></i>
+    </button>
+    <button class="compose-send-btn" id="composeSendBtn" onclick="sendFeedPost()" title="שלח">
+      <i class="fas fa-paper-plane" style="font-size:14px"></i>
+    </button>
+    <button class="compose-send-btn" id="composeEditConfirmBtn" onclick="saveEditMsg()" title="שמור עריכה" style="display:none;background:#059669;">
+      <i class="fas fa-check" style="font-size:14px"></i>
+    </button>
+    <button class="compose-send-btn" id="composeEditCancelBtn" onclick="cancelEditMode()" title="בטל עריכה" style="display:none;background:#6b7280;">
+      <i class="fas fa-times" style="font-size:14px"></i>
+    </button>
+  </div>
+</div>
+
+<div id="previewModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:780px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:15px;font-weight:800;color:#111;">👁️ תצוגה מקדימה להודעה</span>
+      <button onclick="closePreview()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;">✕</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px;background:#eae9e4;" id="previewModalBody"></div>
+  </div>
+</div>
+
+<div id="leaderboardModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:24px;width:100%;max-width:600px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;">
+    <div style="padding:20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg, #1a56db, #7c3aed);color:white;">
+      <span style="font-size:18px;font-weight:900;"><i class="fas fa-trophy" style="color:#fde047;"></i> דירוג יוצרים מובילים</span>
+      <button onclick="closeLeaderboard()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#fff;opacity:0.8;">✕</button>
+    </div>
+    <div style="padding:12px; background:#f9fafb; display:flex; justify-content:center; gap:10px; border-bottom:1px solid #e5e7eb;">
+      <button id="lbTabPodium" class="lb-tab active" onclick="switchLbView('podium')"><i class="fas fa-medal"></i> פודיום</button>
+      <button id="lbTabBars" class="lb-tab" onclick="switchLbView('bars')"><i class="fas fa-chart-bar"></i> עמודות</button>
+      <button id="lbTabList" class="lb-tab" onclick="switchLbView('list')"><i class="fas fa-list-ol"></i> רשימה</button>
+    </div>
+    <div id="lbContent" style="flex:1;overflow-y:auto;padding:24px;background:#f9fafb;">
+    </div>
+  </div>
+</div>
+
+<div id="updateTimeDialog">
+  <div class="utd-box">
+    <div class="utd-title">🟢 הפעלת מצב מעדכן</div>
+    <div class="utd-sub">עד מתי בערך תעדכן?</div>
+    <input class="utd-time-inp" id="updateTimeInput" type="time" placeholder="שעה">
+    <div class="utd-btns">
+      <button class="utd-cancel" onclick="closeUpdateTimeDialog()">ביטול</button>
+      <button class="utd-ok" onclick="confirmUpdateTime()">✓ הפעל</button>
+    </div>
+  </div>
+</div>
+
+<div id="siteSettingsModal">
+  <div class="ss-box">
+    <div class="ss-title">
+      <span>⚙️ הגדרות מערכת מתקדמות</span>
+      <button onclick="closeSiteSettings()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#aaa;">✕</button>
+    </div>
+    <div class="ss-section">
+      <div class="ss-section-title">חסימת משתמשים (Ban)</div>
+      <input type="email" id="settingsBlockEmail" class="ss-input" placeholder="הכנס אימייל לחסימה...">
+      <button class="ss-btn" style="background:#dc2626;" onclick="blockUser()">חסום משתמש</button>
+      <div id="blockedUsersList" style="margin-top:10px; font-size:12px; color:#666;"></div>
+    </div>
+    <div class="ss-section">
+      <div class="ss-section-title">הגדרות תגובות (למשתמשים רגילים)</div>
+      <label style="font-size:13px; display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="settingsCommentsEnable" style="width:16px; height:16px;">
+        אפשר למשתמשים רגילים להגיב (תגובה אחת לפוסט)
+      </label>
+      <button class="ss-btn" onclick="saveCommentsSettings()">שמור הגדרות</button>
+    </div>
+    <div class="ss-section" id="exportSection">
+      <div class="ss-section-title">ייצוא נתונים</div>
+      <button class="ss-btn" onclick="exportEmailsToGroups()" style="background:#059669;">הורד רשימת אימיילים (TXT)</button>
+    </div>
+  </div>
+</div>
+
+<div id="chatCtxMenu"></div>
+
+<div id="emojiPicker">
+  <button class="ep-close-btn" onclick="document.getElementById('emojiPicker').classList.remove('show')" title="סגור" style="position:absolute;top:6px;left:6px;background:none;border:none;cursor:pointer;color:#aaa;font-size:13px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .1s;z-index:2;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
+  <button class="ep-btn" onclick="pickEmoji('❤️')">❤️</button>
+  <button class="ep-btn" onclick="pickEmoji('👍')">👍</button>
+  <button class="ep-btn" onclick="pickEmoji('😂')">😂</button>
+  <button class="ep-btn" onclick="pickEmoji('😭')">😭</button>
+  <button class="ep-btn" onclick="pickEmoji('🔥')">🔥</button>
+  <button class="ep-btn" onclick="pickEmoji('🙏')">🙏</button>
+  <button class="ep-btn" onclick="pickEmoji('😍')">😍</button>
+  <button class="ep-btn" onclick="pickEmoji('😮')">😮</button>
+  <button class="ep-btn" onclick="pickEmoji('💯')">💯</button>
+  <button class="ep-btn" onclick="pickEmoji('👎')">👎</button>
+  <button class="ep-btn" onclick="pickEmoji('😊')">😊</button>
+  <button class="ep-btn" onclick="pickEmoji('😢')">😢</button>
+  <button class="ep-btn" onclick="pickEmoji('🤬')">🤬</button>
+  <button class="ep-btn" onclick="pickEmoji('💥')">💥</button>
+  <button class="ep-btn" onclick="pickEmoji('🥳')">🥳</button>
+  <button class="ep-btn" onclick="pickEmoji('😕')">😕</button>
+  <button class="ep-btn" onclick="pickEmoji('🍿')">🍿</button>
+  <button class="ep-btn" onclick="pickEmoji('💪')">💪</button>
+  <button class="ep-btn" onclick="pickEmoji('🚀')">🚀</button>
+  <button class="ep-btn" onclick="pickEmoji('😉')">😉</button>
+  <button class="ep-btn" onclick="pickEmoji('🥵')">🥵</button>
+  <button class="ep-btn" onclick="pickEmoji('🤑')">🤑</button>
+  <button class="ep-btn" onclick="pickEmoji('🎯')">🎯</button>
+  <button class="ep-btn" onclick="pickEmoji('🌀')">🌀</button>
+  <button class="ep-btn" onclick="pickEmoji('😌')">😌</button>
+  <button class="ep-btn" onclick="pickEmoji('💔')">💔</button>
+  <button class="ep-btn" onclick="pickEmoji('😨')">😨</button>
+  <button class="ep-btn" onclick="pickEmoji('🤣')">🤣</button>
+  <button class="ep-btn" onclick="pickEmoji('📖')">📖</button>
+</div>
+
+<div id="adModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:28px;max-width:500px;width:92%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative">
+    <button onclick="closeAdPanel()" style="position:absolute;top:14px;left:14px;background:#f3f4f6;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;color:#666;font-size:14px">✕</button>
+    <div style="font-size:16px;font-weight:800;color:#111;margin-bottom:20px;text-align:right">📢 ניהול פרסומות</div>
+    <div style="border:1.5px solid #e5e7eb;border-radius:14px;padding:16px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:800;color:#1a56db;margin-bottom:12px;"><i class="fas fa-window-restore" style="font-size:12px"></i> פרסומת פופאפ</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="adPopupImageUrl" type="text" placeholder="קישור לתמונה https://..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%">
+        <input id="adPopupLinkUrl" type="text" placeholder="קישור ללחיצה https://..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%">
+        <textarea id="adPopupHtmlUrl" rows="3" placeholder="או הדבק כאן קוד HTML מלא..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:monospace;width:100%"></textarea>
+        <input id="adPopupTimer" type="number" placeholder="שניות השהיה (מקסימום 5)" min="0" max="5" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;font-family:'Heebo',sans-serif;width:100%">
+        <div style="display:flex;gap:8px;margin-top:5px;">
+          <button onclick="saveAd('popup')" style="flex:1;background:#1a56db;color:#fff;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif">שמור</button>
+          <button onclick="deleteAd('popup')" style="flex:1;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+        </div>
+      </div>
+    </div>
+    <div style="border:1.5px solid #e5e7eb;border-radius:14px;padding:16px;">
+      <div style="font-size:13px;font-weight:800;color:#059669;margin-bottom:12px;"><i class="fas fa-columns" style="font-size:12px"></i> פרסומת עמודה צדדית</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="adSideImageUrl" type="text" placeholder="קישור לתמונה https://..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%">
+        <input id="adSideLinkUrl" type="text" placeholder="קישור ללחיצה https://... (לתמונה בלבד)" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%">
+        <textarea id="adSideHtmlUrl" rows="3" placeholder="או הדבק כאן קוד HTML מלא..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:monospace;width:100%"></textarea>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveAd('side')" style="flex:1;background:#059669;color:#fff;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif">שמור</button>
+          <button onclick="deleteAd('side')" style="flex:1;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+        </div>
+      </div>
+    </div>
+    <div id="adMsg" style="display:none;margin-top:12px;font-size:12px;font-weight:600;text-align:center"></div>
+  </div>
+</div>
+
+<div id="adminMsgsModal" onclick="closeAdminMsgs()">
+  <div class="admin-msgs-box" onclick="event.stopPropagation()">
+    <div class="admin-msgs-hdr">
+      <span class="admin-msgs-title">📢 הודעות מנהל</span>
+      <button class="admin-msgs-close" onclick="closeAdminMsgs()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="admin-msgs-body" id="adminMsgsBody">
+      <div style="text-align:center;padding:30px;color:#aaa;font-size:13px;">אין הודעות</div>
+    </div>
+    <div class="admin-msgs-send" id="adminMsgsSendRow">
+      <textarea class="admin-send-inp" id="adminMsgInput" rows="1" placeholder="שלח הודעה לכל המנהלים..."
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMsg();}"></textarea>
+      <button class="admin-send-btn" onclick="sendAdminMsg()">
+        <i class="fas fa-paper-plane" style="font-size:11px"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="manageAdminsModal" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:20px;max-width:440px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:15px;font-weight:800;color:#111;">⚙️ ניהול צוות ויוצרים</span>
+      <button onclick="closeManageAdmins()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;">✕</button>
+    </div>
+    <div id="adminsList" style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="padding:14px 16px;border-top:1px solid #f0f0f0;flex-shrink:0;">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;">הוספת יוצר / איש צוות חדש</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <input id="newAdminEmail" type="email" placeholder="אימייל Google..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%;transition:border-color .15s;">
+        <input id="newAdminName" type="text" placeholder="שם תצוגה (יופיע בפוסטים)..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:rtl;font-family:'Heebo',sans-serif;width:100%;transition:border-color .15s;">
+        <input id="newAdminSlug" type="text" placeholder="כינוי באנגלית לפיד אישי (למשל: david)..." style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;width:100%;transition:border-color .15s;">
+        <select id="newAdminRole" style="border:1.5px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;font-family:'Heebo',sans-serif;width:100%;">
+            <option value="user">יוזר (יוצר בלבד)</option>
+            <option value="manager">מנהל (כתיבה כללית)</option>
+            <option value="supervisor">צוות פיקוח (מנהל + ניהול)</option>
+        </select>
+        <button onclick="addAdmin()" style="background:#1a56db;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;">+ הוסף משתמש</button>
+      </div>
+      <div id="adminMsgResult" style="display:none;margin-top:8px;font-size:12px;font-weight:600;text-align:center;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="reportsModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:20px;max-width:500px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:15px;font-weight:800;color:#111;">🚩 דיווחי משתמשים</span>
+      <button onclick="closeReportsModal()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;">✕</button>
+    </div>
+    <div id="reportsList" style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<div id="writePermModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:20px;max-width:400px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:15px;font-weight:800;color:#111;">✍️ הרשאות כתיבה כלליות למערכת</span>
+      <button onclick="closeWritePerms()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;">✕</button>
+    </div>
+    <div id="writePermList" style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<div id="cpOverlay" onclick="closeComments()"></div>
+<div id="commentsPanel">
+  <div class="cp-hdr">
+    <span class="cp-title">💬 תגובות</span>
+    <button class="cp-close" onclick="closeComments()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cp-body" id="cpBody"></div>
+  <div class="cp-inp-row" id="commentInputContainer">
+    <textarea class="cp-inp" id="cpInp" placeholder="כתוב תגובה..." rows="1"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendComment();}"></textarea>
+    <button class="cp-send" onclick="sendComment()"><i class="fas fa-paper-plane" style="font-size:12px"></i></button>
+  </div>
+  <div id="commentDisabledMsg" class="cp-disabled-msg" style="display:none;"></div>
+</div>
+
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lbClose" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <img id="lbImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<div id="reportModalOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeReportModal()">
+  <div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;animation:pickerPop .2s ease-out;font-family:'Heebo',sans-serif;direction:rtl;">
+    
+    <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-flag" style="color:#dc2626;font-size:14px;"></i>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:900;color:#111;">דיווח על הודעה</div>
+          <div id="reportModalMsgId" style="font-size:11px;color:#9ca3af;font-weight:600;"></div>
+        </div>
+      </div>
+      <button onclick="closeReportModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='none'">✕</button>
+    </div>
+    
+    <div style="padding:18px 20px;">
+      <div style="background:#fff8f0;border-right:3px solid #f97316;border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.6;">
+        <i class="fas fa-info-circle" style="color:#f97316;margin-left:5px;"></i>
+        <span>שימו לב! חובה לציין את הסיבה לדיווח בכדי שנוכל לטפל בבעיה בהקדם האפשרי.</span>
+      </div> <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">תיאור הבעיה</label>
+      <textarea id="reportModalInput" rows="4" placeholder="פרט במספר מילים מה הבעיה בהודעה זו..." style="width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:14px;font-family:'Heebo',sans-serif;outline:none;resize:vertical;direction:rtl;transition:border-color .15s;" onfocus="this.style.borderColor='#1a56db'" onblur="this.style.borderColor='#e5e7eb'" onkeydown="if(event.key==='Enter'&&event.ctrlKey)submitReport()"></textarea>
+      <div id="reportModalError" style="display:none;font-size:12px;color:#dc2626;font-weight:700;margin-top:6px;padding:6px 10px;background:#fef2f2;border-radius:8px;"></div>
+    </div>
+    
+    <div style="padding:0 20px 18px;display:flex;gap:10px;">
+      <button id="reportSubmitBtn" onclick="submitReport()" style="flex:1;background:#dc2626;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;transition:background .15s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+        <i class="fas fa-paper-plane" style="font-size:12px;"></i> שלח דיווח
+      </button>
+<button onclick="closeReportModal()" style="background:#f3f4f6;color:#374151;border:none;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;transition:background .15s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+        ביטול
+      </button>
+    </div>
+  </div>
+</div>
+<div id="creatorsPanel">
+  <div class="cp-glass" style="position:relative;">
+    <div class="cp-glass-hdr">
+      <span class="cp-glass-title">יוצרים</span>
+      <button class="cp-glass-close" onclick="closeCreatorsPanel()">✕</button>
+    </div>
+    <div class="cp-glass-list-wrap" style="position:relative;">
+      <div class="cp-glass-list" id="creatorsGlassList"></div>
+      <div class="cp-glass-list-fade" id="creatorsListFade"></div>
+    </div>
+  </div>
+</div>
+
+<div id="siteStatsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:999999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:#fff; border-radius:16px; width:90%; max-width:400px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.2); text-align:center; direction:rtl; position:relative;">
+    <button onclick="closeSiteStats()" style="position:absolute; top:15px; left:15px; background:none; border:none; font-size:18px; cursor:pointer; color:#9ca3af; transition:0.2s;">✕</button>
+    <h2 style="margin:0 0 5px 0; color:#1e293b; font-size:20px; font-weight:900;">סטטיסטיקות קהילה</h2>
+    <p style="margin:0 0 20px 0; color:#64748b; font-size:13px;">נתוני גלישה ופעילות באתר</p>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; text-align:center;">
+        <i class="fas fa-circle" style="color:#22c55e; font-size:10px; animation:pulse-dot 2s infinite;"></i>
+        <div style="font-size:24px; font-weight:900; color:#1a56db; margin:5px 0;" id="statOnline">-</div>
+        <div style="font-size:12px; font-weight:bold; color:#475569;">מחוברים כעת</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; text-align:center;">
+        <i class="fas fa-trophy" style="color:#fbbf24; font-size:14px;"></i>
+        <div style="font-size:24px; font-weight:900; color:#d97706; margin:5px 0;" id="statPeak">-</div>
+        <div style="font-size:12px; font-weight:bold; color:#475569;">שיא משתמשים</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; text-align:center;">
+        <i class="fas fa-clock" style="color:#64748b; font-size:14px;"></i>
+        <div style="font-size:20px; font-weight:900; color:#334155; margin:5px 0;" id="statHour">-</div>
+        <div style="font-size:12px; font-weight:bold; color:#475569;">בשעה האחרונה</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; text-align:center;">
+        <i class="fas fa-calendar-day" style="color:#64748b; font-size:14px;"></i>
+        <div style="font-size:20px; font-weight:900; color:#334155; margin:5px 0;" id="statDay">-</div>
+        <div style="font-size:12px; font-weight:bold; color:#475569;">ביממה האחרונה</div>
+      </div>
+    </div>
+    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:12px; text-align:center;">
+      <div style="font-size:20px; font-weight:900; color:#1d4ed8;" id="statWeek">-</div>
+      <div style="font-size:12px; font-weight:bold; color:#1e40af;">משתמשים ייחודיים בשבוע האחרון</div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js?v=48"></script>
+<script>
+  // שמנו את זה כאן כדי שזה יעבוד תמיד, גם אם הקובץ השני קורס
+  window.closeReportModal = function() {
+    // מציאת חלון הרקע (ה-overlay) והסתרתו
+    const overlay = document.querySelector('[onclick*="closeReportModal"]');
+    if (overlay) overlay.style.display = 'none';
+    
+    // ניקוי תיבת הטקסט אם קיימת
+    const input = document.getElementById('reportModalInput');
+    if (input) input.value = '';
+    
+    // הסתרת הודעת שגיאה אם קיימת
+    const error = document.getElementById('reportModalError');
+    if (error) error.style.display = 'none';
+  };
+</script>
+</body>
+</html>
