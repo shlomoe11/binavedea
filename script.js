@@ -64,37 +64,42 @@ async function triggerStats() {
 }
 setInterval(triggerStats, 10000); // מעדכן אוטומטית כל 10 שניות
 async function loadAd() {
-    // 1. ניסיון למשוך את הנתונים מהשרת
+    console.log("Ad script started..."); // בדיקה שהפונקציה בכלל רצה
     try {
         const res = await fetch("https://shlomoe11.pythonanywhere.com/ads.json");
-        if (!res.ok) return;
         const data = await res.json();
-        
-        // 2. שליפת נתוני הפרסומת (לפי המפתח שמופיע ב-JSON שלך)
-        const ad = data["shaagat_ad"]; 
-        if (!ad || !ad.active) return;
+        console.log("Data received from server:", data);
 
-        // 3. איתור האלמנטים ב-HTML (לפי ה-IDs ששלחת לי בטקסט)
+        // בדיקה אם המפתח קיים - שים לב אם זה shaagat_ad או משהו אחר
+        const ad = data["shaagat_ad"]; 
+        if (!ad) {
+            console.log("Error: 'shaagat_ad' not found in JSON");
+            return;
+        }
+
         const sidebar = document.getElementById('adOnlySidebar');
         const adImg = document.getElementById('adSidebarImg');
         const adLink = document.getElementById('adSidebarLink');
 
         if (sidebar && adImg && adLink) {
-            // עדכון התמונה והקישור
             adImg.src = ad.imageUrl;
             adLink.href = ad.link;
-            
-            // הצגת העמודה (ב-HTML היא על display: none)
-            sidebar.style.display = 'block';
+            sidebar.style.setProperty('display', 'block', 'important');
+            console.log("Ad should be visible now!");
+        } else {
+            console.log("Error: One of the HTML elements (sidebar/img/link) is missing from DOM");
         }
     } catch (e) {
-        console.error("Ad load failed:", e);
+        console.error("Fetch failed:", e);
     }
 }
 
-// אל תשכח לקרוא לפונקציה כשהדף נטען
-window.addEventListener('DOMContentLoaded', loadAd);
-let pollPending = false, oldestTs = 0, allLoaded = false, loadingMore = false;
+// זה יוודא שהקוד ירוץ רק כשהדף מוכן לגמרי
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadAd);
+} else {
+    loadAd();
+}
 
 let composeProfile = 'news', composeImgUrl = '', composeVidUrl = '', composeBtns = [], composeHtmlCode = '';
 let chatLastIds = '', chatTypingTimer = null, adminMsgsLastId = null, adminMsgsUnread = 0;
