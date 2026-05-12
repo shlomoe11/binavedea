@@ -64,11 +64,12 @@ async function triggerStats() {
 }
 setInterval(triggerStats, 10000); // מעדכן אוטומטית כל 10 שניות
 async function loadAd() {
-    const adContainer = document.getElementById('adSidebarContainer'); // וודא שזה ה-ID ב-HTML
+    // ננסה למצוא את האלמנט שבו הפרסומת צריכה להופיע
+    const adContainer = document.getElementById('adSidebarContainer') || document.querySelector('.ad-sidebar');
     if (!adContainer) return;
 
     try {
-        // פנייה ישירה לקובץ ads.json בשרת הפייתון (כמו הפיד)
+        // משיכה ישירה של הקובץ מהשרת - בדיוק כמו הפיד!
         const res = await fetch(BACKEND + "/ads.json?v=" + Date.now());
         if (!res.ok) return;
         
@@ -77,13 +78,13 @@ async function loadAd() {
 
         if (ad && ad.active) {
             adContainer.innerHTML = `
-                <a href="${ad.link}" target="_blank" style="display:block; text-decoration:none;">
-                    <img src="${ad.imageUrl}" style="width:100%; border-radius:12px; display:block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <a href="${ad.link}" target="_blank" style="display:block;">
+                    <img src="${ad.imageUrl}" style="width:100%; border-radius:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                 </a>
             `;
         }
     } catch (e) {
-        console.error("Ad load failed:", e);
+        console.error("שגיאה בטעינת פרסומת:", e);
     }
 }
 let pollPending = false, oldestTs = 0, allLoaded = false, loadingMore = false;
