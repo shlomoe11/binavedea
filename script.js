@@ -64,41 +64,39 @@ async function triggerStats() {
 }
 setInterval(triggerStats, 10000); // מעדכן אוטומטית כל 10 שניות
 async function loadAd() {
-    console.log("Ad script started..."); // בדיקה שהפונקציה בכלל רצה
     try {
-        const res = await fetch("https://shlomoe11.pythonanywhere.com/ads.json");
+        const res = await fetch("https://shlomoe11.pythonanywhere.com/ads.json?v=" + Date.now());
         const data = await res.json();
-        console.log("Data received from server:", data);
+        const ad = data["shaagat_ad"];
 
-        // בדיקה אם המפתח קיים - שים לב אם זה shaagat_ad או משהו אחר
-        const ad = data["shaagat_ad"]; 
-        if (!ad) {
-            console.log("Error: 'shaagat_ad' not found in JSON");
-            return;
+        if (ad && ad.active) {
+            const sidebar = document.getElementById('adOnlySidebar');
+            const adImg = document.getElementById('adSidebarImg');
+            const adLink = document.getElementById('adSidebarLink');
+
+            if (sidebar && adImg) {
+                // עדכון תוכן
+                adImg.src = ad.imageUrl;
+                if (adLink) adLink.href = ad.link;
+
+                // הגדרות CSS כדי שזה יהיה מובנה ולא יחתך
+                sidebar.style.setProperty('display', 'flex', 'important');
+                sidebar.style.setProperty('flex-direction', 'column', 'important');
+                sidebar.style.setProperty('padding', '10px', 'important');
+                
+                adImg.style.width = "100%";
+                adImg.style.height = "auto";
+                adImg.style.objectFit = "contain"; // זה מונע את החיתוך של התמונה
+                adImg.style.borderRadius = "12px";
+
+                console.log("Ad fixed and embedded.");
+            }
         }
-
-        const sidebar = document.getElementById('adOnlySidebar');
-        const adImg = document.getElementById('adSidebarImg');
-        const adLink = document.getElementById('adSidebarLink');
-
-        if (sidebar && adImg && adLink) {
-            adImg.src = ad.imageUrl;
-            adLink.href = ad.link;
-            sidebar.style.setProperty('display', 'block', 'important');
-            console.log("Ad should be visible now!");
-        } else {
-            console.log("Error: One of the HTML elements (sidebar/img/link) is missing from DOM");
-        }
-    } catch (e) {
-        console.error("Fetch failed:", e);
-    }
+    } catch (e) { console.error("Ad error:", e); }
 }
 
-// זה יוודא שהקוד ירוץ רק כשהדף מוכן לגמרי
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadAd);
-} else {
-    loadAd();
+// הפעלה
+setTimeout(loadAd, 2000);
 }
 
 let composeProfile = 'news', composeImgUrl = '', composeVidUrl = '', composeBtns = [], composeHtmlCode = '';
