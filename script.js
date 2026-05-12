@@ -2191,7 +2191,6 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 });
 
-// השחזור של הגרסה שעבדה
 async function loadAd() {
     try {
         const res = await fetch("https://shlomoe11.pythonanywhere.com/ads.json?v=" + Date.now());
@@ -2201,28 +2200,25 @@ async function loadAd() {
         if (ad && ad.active) {
             const sidebar = document.getElementById('adOnlySidebar');
             const adImg = document.getElementById('adSidebarImg');
-            const adLink = document.getElementById('adSidebarLink');
 
             if (sidebar && adImg) {
                 adImg.src = ad.imageUrl;
-                if (adLink) adLink.href = ad.link;
+                document.getElementById('adSidebarLink').href = ad.link;
 
-                // הגדרות תצוגה פשוטות כמו שהיה
+                // הצגת העמודה
                 sidebar.style.display = 'block';
                 sidebar.style.position = 'sticky';
-                sidebar.style.top = '75px'; // מונע עליה על הפרופיל
-                
-                // תיקון החיתוך - התמונה תתכווץ לגובה שתחליט (למשל 500px)
-                adImg.style.width = '100%';
-                adImg.style.maxHeight = '500px'; 
-                adImg.style.objectFit = 'contain'; 
+                sidebar.style.top = '70px';
+
+                // התיקון שאתה צריך: הגבלת גובה התמונה
+                adImg.style.width = '100%';        // רוחב מלא של העמודה
+                adImg.style.maxHeight = '350px';   // כאן אתה קובע כמה היא תהיה קטנה! תשנה ל-250 אם זה עדיין גדול
+                adImg.style.objectFit = 'contain'; // מכווץ את כל התמונה פנימה בלי לחתוך
                 adImg.style.borderRadius = '12px';
+                adImg.style.display = 'block';
             }
         }
-    } catch (e) {
-        console.error("Ad load error:", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// קריאה אחת פשוטה וזהו
 setTimeout(loadAd, 1500);
