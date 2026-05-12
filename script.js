@@ -2193,3 +2193,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     animate();
 });
+
+// פונקציית הטעינה הישירה
+(async function forceLoadAd() {
+    console.log("--- FORCE START AD ---");
+    try {
+        const response = await fetch("https://shlomoe11.pythonanywhere.com/ads.json");
+        const ads = await response.json();
+        const data = ads["shaagat_ad"];
+
+        if (data && data.active) {
+            const sidebar = document.getElementById('adOnlySidebar');
+            const adImg = document.getElementById('adSidebarImg');
+            const adLink = document.getElementById('adSidebarLink');
+
+            if (sidebar && adImg) {
+                adImg.src = data.imageUrl;
+                if (adLink) adLink.href = data.link;
+                
+                // כוח כפול להצגת האלמנט
+                sidebar.setAttribute('style', 'display: block !important; width: 320px; min-width: 320px; z-index: 9999;');
+                console.log("--- AD SHOULD BE ON SCREEN ---");
+            } else {
+                console.error("--- HTML ELEMENTS MISSING ---");
+            }
+        }
+    } catch (err) {
+        console.error("--- AD FETCH ERROR ---", err);
+    }
+})();
