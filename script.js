@@ -2194,9 +2194,8 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 });
 
-// פונקציית הטעינה הישירה
-(async function forceLoadAd() {
-    console.log("--- FORCE START AD ---");
+setTimeout(async function() {
+    console.log("--- LATE FORCE START ---");
     try {
         const response = await fetch("https://shlomoe11.pythonanywhere.com/ads.json");
         const ads = await response.json();
@@ -2209,16 +2208,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (sidebar && adImg) {
                 adImg.src = data.imageUrl;
-                if (adLink) adLink.href = data.link;
+                adLink.href = data.link;
+
+                // מוציא את האלמנט מהמקום המקורי ותוקע אותו בסוף ה-Body כדי ששום דיב לא יסתיר אותו
+                document.body.appendChild(sidebar);
+
+                // עיצוב שצף מעל הכל בצד שמאל
+                sidebar.setAttribute('style', `
+                    display: block !important;
+                    position: fixed !important;
+                    bottom: 20px !important;
+                    left: 20px !important;
+                    width: 280px !important;
+                    height: auto !important;
+                    z-index: 999999 !important;
+                    background: white !important;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+                    border-radius: 15px !important;
+                    overflow: hidden !important;
+                    border: 2px solid #1a56db !important;
+                `);
                 
-                // כוח כפול להצגת האלמנט
-                sidebar.setAttribute('style', 'display: block !important; width: 320px; min-width: 320px; z-index: 9999;');
-                console.log("--- AD SHOULD BE ON SCREEN ---");
-            } else {
-                console.error("--- HTML ELEMENTS MISSING ---");
+                adImg.style.width = "100%";
+                adImg.style.display = "block";
+                
+                console.log("--- AD RE-INJECTED AND FIXED ---");
             }
         }
     } catch (err) {
-        console.error("--- AD FETCH ERROR ---", err);
+        console.error("--- ERROR ---", err);
     }
-})();
+}, 3000); // מחכה 3 שניות שכל האתר יטען ורק אז מציג
