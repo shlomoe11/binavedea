@@ -2205,22 +2205,27 @@ async function loadAd() {
                 adImg.src = ad.imageUrl;
                 document.getElementById('adSidebarLink').href = ad.link;
 
-                // הגדרות העמודה (Sidebar)
-                sidebar.style.display = 'flex';           // מאפשר יישור פנימי
-                sidebar.style.alignItems = 'center';      // מיישר לאמצע אנכית
-                sidebar.style.justifyContent = 'center';  // מיישר לאמצע אופקית
-                sidebar.style.position = 'sticky';
-                sidebar.style.top = '80px';               // רווח מהתפריט העליון
-                sidebar.style.height = 'fit-content';     // הקופסה נצמדת לגובה התמונה (מונע לבן מסביב)
-                sidebar.style.background = 'transparent'; // מבטל רקע לבן אם נשאר
+                // הגדרות העמודה - שתהיה יציבה ולא תגרור את הדף
+                sidebar.setAttribute('style', `
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 320px !important;
+                    height: calc(100vh - 80px) !important;
+                    position: sticky !important;
+                    top: 80px !important;
+                    overflow: hidden !important;
+                    background: transparent !important;
+                `);
 
-                // הגדרות התמונה
-                adImg.style.width = '100%';               // תופסת את כל רוחב העמודה
-                adImg.style.maxWidth = 'none';           // מגביל רוחב כדי שלא תהיה ענקית
-                adImg.style.height = 'auto';              // גובה משתנה לפי הפרופורציה (מונע מתיחה/חיתוך)
-                adImg.style.display = 'block';
-                adImg.style.borderRadius = '12px';
-                adImg.style.margin = '0 auto';            // יישור סופי למרכז
+                // הגדרות התמונה - מגבלת גובה ברורה!
+                adImg.setAttribute('style', `
+                    width: 100% !important;
+                    max-height: 80vh !important; /* מגבלת גובה של 80% מהמסך */
+                    object-fit: contain !important;
+                    display: block !important;
+                    border-radius: 12px !important;
+                `);
             }
         }
     } catch (e) { console.error(e); }
