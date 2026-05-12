@@ -97,7 +97,6 @@ async function loadAd() {
 
 // הפעלה
 setTimeout(loadAd, 2000);
-}
 
 let composeProfile = 'news', composeImgUrl = '', composeVidUrl = '', composeBtns = [], composeHtmlCode = '';
 let chatLastIds = '', chatTypingTimer = null, adminMsgsLastId = null, adminMsgsUnread = 0;
