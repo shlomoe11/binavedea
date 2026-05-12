@@ -2194,48 +2194,60 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 });
 
+// מחכה 4 שניות שכל הסקריפטים האחרים יסיימו להשתולל
 setTimeout(async function() {
-    console.log("--- LATE FORCE START ---");
+    console.log("--- FINAL FORCE START ---");
     try {
-        const response = await fetch("https://shlomoe11.pythonanywhere.com/ads.json");
+        const response = await fetch("https://shlomoe11.pythonanywhere.com/ads.json?v=" + Date.now());
         const ads = await response.json();
         const data = ads["shaagat_ad"];
 
         if (data && data.active) {
-            const sidebar = document.getElementById('adOnlySidebar');
-            const adImg = document.getElementById('adSidebarImg');
-            const adLink = document.getElementById('adSidebarLink');
+            // מסירים את הפרסומת הישנה אם היא קיימת
+            const oldAd = document.getElementById('adOnlySidebar');
+            if (oldAd) oldAd.remove();
 
-            if (sidebar && adImg) {
-                adImg.src = data.imageUrl;
-                adLink.href = data.link;
+            // יוצרים עמודה צדדית חדשה לחלוטין שלא קיימת ב-HTML
+            const newAdPanel = document.createElement('div');
+            newAdPanel.id = 'finalForceAdPanel';
 
-                // מוציא את האלמנט מהמקום המקורי ותוקע אותו בסוף ה-Body כדי ששום דיב לא יסתיר אותו
-                document.body.appendChild(sidebar);
+            // יוצרים את הקישור והתמונה בפנים
+            newAdPanel.innerHTML = `
+                <a href="${data.link}" target="_blank" style="display:block;">
+                    <img src="${data.imageUrl}" style="
+                        width: 100% !important;
+                        height: auto !important;
+                        object-fit: contain !important;
+                        border-radius: 12px;
+                        display: block;
+                    ">
+                </a>
+                <span style="position:absolute; top:2px; right:6px; font-size:9px; color:#aaa; font-family:sans-serif; pointer-events:none;">Ad</span>
+            `;
 
-                // עיצוב שצף מעל הכל בצד שמאל
-                sidebar.setAttribute('style', `
-                    display: block !important;
-                    position: fixed !important;
-                    bottom: 20px !important;
-                    left: 20px !important;
-                    width: 280px !important;
-                    height: auto !important;
-                    z-index: 999999 !important;
-                    background: white !important;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
-                    border-radius: 15px !important;
-                    overflow: hidden !important;
-                    border: 2px solid #1a56db !important;
-                `);
-                
-                adImg.style.width = "100%";
-                adImg.style.display = "block";
-                
-                console.log("--- AD RE-INJECTED AND FIXED ---");
-            }
+            // תוקעים את המלבן החדש בסוף ה-Body, מעל הכל
+            document.body.appendChild(newAdPanel);
+
+            // עיצוב אגרסיבי שיצוף מעל הכל בצד שמאל למטה
+            newAdPanel.setAttribute('style', `
+                display: block !important;
+                position: fixed !important;
+                bottom: 20px !important;
+                left: 20px !important;
+                width: 250px !important;
+                height: auto !important;
+                z-index: 999999999 !important;
+                background: white !important;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+                border-radius: 15px !important;
+                padding: 10px !important;
+                border: 2px solid #1a56db !important;
+                transition: opacity 0.5s;
+            `);
+
+            console.log("--- NEW AD PANEL INJECTED ---");
         }
     } catch (err) {
-        console.error("--- ERROR ---", err);
+        console.error("--- FINAL ERROR ---", err);
     }
-}, 3000); // מחכה 3 שניות שכל האתר יטען ורק אז מציג
+}, 4000);
