@@ -67,32 +67,83 @@ async function loadAd() {
     try {
         const res = await fetch("https://shlomoe11.pythonanywhere.com/ads.json?v=" + Date.now());
         const data = await res.json();
-        const ad = data["shaagat_ad"];
-
-        if (ad && ad.active) {
+        
+        // 1. טיפול בפרסומת צד (shaagat_ad)
+        const sidebarAd = data["shaagat_ad"];
+        if (sidebarAd && sidebarAd.active) {
             const sidebar = document.getElementById('adOnlySidebar');
             const adImg = document.getElementById('adSidebarImg');
-            const adLink = document.getElementById('adSidebarLink');
 
             if (sidebar && adImg) {
-                // עדכון תוכן
-                adImg.src = ad.imageUrl;
-                if (adLink) adLink.href = ad.link;
+                adImg.src = sidebarAd.imageUrl;
+                document.getElementById('adSidebarLink').href = sidebarAd.link;
 
-                // הגדרות CSS כדי שזה יהיה מובנה ולא יחתך
-                sidebar.style.setProperty('display', 'flex', 'important');
-                sidebar.style.setProperty('flex-direction', 'column', 'important');
-                sidebar.style.setProperty('padding', '10px', 'important');
-                
-                adImg.style.width = "100%";
-                adImg.style.height = "auto";
-                adImg.style.objectFit = "contain"; // זה מונע את החיתוך של התמונה
-                adImg.style.borderRadius = "12px";
+                sidebar.setAttribute('style', `
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 320px !important;
+                    height: calc(100vh - 80px) !important;
+                    position: sticky !important;
+                    top: 80px !important;
+                    overflow: hidden !important;
+                    background: transparent !important;
+                `);
 
-                console.log("Ad fixed and embedded.");
+                adImg.setAttribute('style', `
+                    width: 100% !important;
+                    max-height: 85vh !important;
+                    object-fit: contain !important;
+                    display: block !important;
+                    border-radius: 12px !important;
+                `);
             }
         }
-    } catch (e) { console.error("Ad error:", e); }
+
+        // 2. טיפול בפרסומת קופצת נפרדת (popup_ad) - פעם בשעה
+        const popupAd = data["popup_ad"];
+        if (popupAd && popupAd.active) {
+            const lastShown = localStorage.getItem('last_ad_shown');
+            const now = Date.now();
+            
+            if (!lastShown || (now - parseInt(lastShown) > AD_INTERVAL)) {
+                const overlay = document.createElement('div');
+                overlay.setAttribute('style', `
+                    position: fixed !important; top: 0 !important; left: 0 !important;
+                    width: 100vw !important; height: 100vh !important;
+                    background: rgba(0, 0, 0, 0.7) !important;
+                    display: flex !important; align-items: center !important; justify-content: center !important;
+                    z-index: 99999 !important;
+                `);
+
+                const container = document.createElement('div');
+                container.setAttribute('style', 'position: relative !important; max-width: 500px !important; width: 90% !important;');
+
+                const closeBtn = document.createElement('button');
+                closeBtn.innerText = '✕';
+                closeBtn.setAttribute('style', 'position: absolute !important; top: -35px !important; right: 0 !important; background: none !important; border: none !important; color: white !important; font-size: 24px !important; cursor: pointer !important;');
+                closeBtn.onclick = () => overlay.remove();
+
+                const link = document.createElement('a');
+                link.href = popupAd.link;
+                link.target = '_blank';
+
+                const img = document.createElement('img');
+                img.src = popupAd.imageUrl;
+                img.setAttribute('style', 'width: 100% !important; height: auto !important; border-radius: 12px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important; display: block !important;');
+
+                link.appendChild(img);
+                container.appendChild(closeBtn);
+                container.appendChild(link);
+                overlay.appendChild(container);
+                
+                overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+                document.body.appendChild(overlay);
+
+                localStorage.setItem('last_ad_shown', now.toString());
+            }
+        }
+    } catch (e) { console.error(e); }
 }
 
 // הפעלה
